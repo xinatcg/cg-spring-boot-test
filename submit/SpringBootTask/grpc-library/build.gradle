@@ -1,0 +1,58 @@
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+repositories {
+    maven { url "https://maven.aliyun.com/repository/central/" }
+}
+
+group 'com.example.springboot-grpc-demo'
+version '1.0-SNAPSHOT'
+archivesBaseName="grpc-lib"
+sourceCompatibility = 1.8
+
+sourceSets{
+    main {
+        proto {
+            srcDir "src/main/proto"
+            srcDir "src/test/proto"
+        }
+    }
+}
+
+dependencies {
+    compile "io.grpc:grpc-netty:1.10.0"
+    compile "io.grpc:grpc-protobuf:1.10.0"
+    compile "io.grpc:grpc-stub:1.10.0"
+}
+
+
+protobuf {
+    generatedFilesBaseDir = "src"
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.0.0'
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.0.0-pre2'
+        }
+    }
+    generateProtoTasks {
+        ofSourceSet('main')
+        all()*.plugins {
+            grpc {
+                outputSubDir = "java"
+            }
+        }
+    }
+
+}
+
+buildscript {
+    repositories {
+        maven { url "https://maven.aliyun.com/repository/central/" }
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.4'
+    }
+}
